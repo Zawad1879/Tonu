@@ -69,7 +69,7 @@
             android:name=".NewForumPostActivity"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".ExpertChatActivity"
+            android:name=".ChatActivity"
             android:screenOrientation="portrait"/>
         <activity
             android:name=".DangerZone"

@@ -10,7 +10,7 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
  * Author: ARGHA K ROY
  * Date: 4/7/2016.
  */
-public class ExpertChatActivity extends AppCompatActivity{
+public class ChatActivity extends AppCompatActivity{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

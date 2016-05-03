@@ -5,14 +5,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.Rect;
-import android.graphics.RectF;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -23,6 +15,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.telephony.SmsManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,14 +23,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.facebook.FacebookSdk;
-import com.squareup.picasso.Picasso;
-
-import java.io.FileInputStream;
+import java.util.Set;
+import java.util.logging.Handler;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import me.argha.tonu.helpers.MyPreferenceManager;
 import me.argha.tonu.utils.Util;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
@@ -51,12 +43,13 @@ public class MainActivity extends AppCompatActivity
     String username;
 
 
+    MyPreferenceManager preferenceManager;
     boolean clicked=false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_layout);
-
+        preferenceManager= new MyPreferenceManager(this);
         ButterKnife.bind(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -101,15 +94,28 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.mainHelpBtn:
                 if(!clicked){
-                    String messageToSend = "Salma is asking for emergency help.\nAddress: PSC Convention center\nLocation: 23.803435, 90.378862\n" +
+                    String name= /*preferenceManager.getUser().getName();*/"Nabil";
+                    String messageToSend = name+" is in an emergency and would like your help" +
+                            ".\nAddress: Map coordinates\nLocation: 23.803435, 90.378862\n" +
                             "http://maps.google.com/?q=23.803435,90.378862";
-                    String number = "01621209959";
+//                    String number = "01621209959";
+                    Set<String> numbers= preferenceManager.getEmergencyContactNumbers();
+                    for(String n: numbers){
+//                        SmsManager.getDefault().sendTextMessage(n, null, messageToSend, null,null);
+                        Log.e("MainActivity","Sending a message to "+n);
+                    }
 
-                    SmsManager.getDefault().sendTextMessage(number, null, messageToSend, null,null);
 
                     mainHelpBtn.setImageResource(R.drawable.ic_alaram);
                     clicked=true;
                     Util.showToast(this,"Alert has been sent to emergeny contacts and nearest police stations");
+                    android.os.Handler handler= new android.os.Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mainHelpBtn.setImageResource(R.drawable.ic_alarm2);
+                        }
+                    },3000);
                 }else {
                     clicked=false;
                     mainHelpBtn.setImageResource(R.drawable.ic_alarm2);
@@ -132,7 +138,7 @@ public class MainActivity extends AppCompatActivity
                     public void onClick(DialogInterface dialog, int which) {
                         switch (which){
                             case 0:
-                                startActivity(new Intent(MainActivity.this,ExpertChatActivity.class));
+                                startActivity(new Intent(MainActivity.this,ChatActivity.class));
                                 break;
                             case 1:
                                 Intent callIntent = new Intent(Intent.ACTION_CALL);
