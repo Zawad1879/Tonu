@@ -1,4 +1,4 @@
-package me.argha.tonu;
+package me.argha.tonu.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import me.argha.tonu.R;
 
 public class NotificationActivity extends AppCompatActivity {
 

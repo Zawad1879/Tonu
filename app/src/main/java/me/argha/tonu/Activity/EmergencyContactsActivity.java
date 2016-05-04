@@ -1,4 +1,4 @@
-package me.argha.tonu;
+package me.argha.tonu.activity;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -20,6 +20,7 @@ import java.util.Set;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import me.argha.tonu.R;
 import me.argha.tonu.helpers.MyPreferenceManager;
 import me.argha.tonu.model.User;
 

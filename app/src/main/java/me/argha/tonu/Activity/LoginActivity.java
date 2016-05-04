@@ -1,4 +1,4 @@
-package me.argha.tonu;
+package me.argha.tonu.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -37,6 +37,7 @@ import java.util.concurrent.ExecutionException;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import me.argha.tonu.R;
 import me.argha.tonu.utils.Util;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 

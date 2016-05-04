@@ -1,4 +1,4 @@
-package me.argha.tonu;
+package me.argha.tonu.activity;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -42,6 +42,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import cz.msebera.android.httpclient.Header;
+import me.argha.tonu.R;
 import me.argha.tonu.app.EndPoints;
 import me.argha.tonu.helpers.MyPreferenceManager;
 import me.argha.tonu.utils.Util;

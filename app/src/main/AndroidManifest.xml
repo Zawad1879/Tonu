@@ -24,7 +24,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".SplashActivity"
+            android:name=".activity.SplashActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
             <intent-filter>
@@ -34,15 +34,15 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".LoginActivity"
+            android:name=".activity.LoginActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
         <activity
-            android:name=".RegularRegistrationActivity"
+            android:name=".activity.RegularRegistrationActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.MainActivity"
             android:label="@string/title_activity_main"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
@@ -63,19 +63,19 @@
             android:value="@string/facebook_app_id"/>
 
         <activity
-            android:name=".FAQActivity"
+            android:name=".activity.FAQActivity"
             android:label="@string/title_activity_faq"/>
         <activity
-            android:name=".ForumActivity"
+            android:name=".activity.ForumActivity"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".NewForumPostActivity"
+            android:name=".activity.NewForumPostActivity"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".ChatActivity"
+            android:name=".activity.ChatActivity"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".DangerZone"
+            android:name=".activity.DangerZone"
             android:label="@string/title_activity_danger_zone"
             android:screenOrientation="portrait">
         </activity>
@@ -88,19 +88,19 @@
             android:value="@integer/google_play_services_version"/>
 
         <activity
-            android:name=".ReportActivity"
+            android:name=".activity.ReportActivity"
             android:label="@string/title_activity_report"
             android:screenOrientation="portrait">
         </activity>
         <activity
-            android:name=".ProfileActivity"
+            android:name=".activity.ProfileActivity"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".IdentifyActivity"
+            android:name=".activity.IdentifyActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".EmergencyContactsActivity"
+        <activity android:name=".activity.EmergencyContactsActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".NotificationActivity"/>
+        <activity android:name=".activity.NotificationActivity"/>
     </application>
 
 </manifest>

@@ -1,10 +1,9 @@
-package me.argha.tonu;
+package me.argha.tonu.activity;
 
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -15,7 +14,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,11 +23,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Set;
-import java.util.logging.Handler;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import me.argha.tonu.R;
 import me.argha.tonu.helpers.MyPreferenceManager;
 import me.argha.tonu.utils.Util;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;

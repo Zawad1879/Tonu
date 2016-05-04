@@ -1,12 +1,9 @@
-package me.argha.tonu;
+package me.argha.tonu.activity;
 
 /**
  * Created by user pc on 5/4/2016.
  */
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.hardware.usb.UsbEndpoint;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -23,7 +20,6 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -31,6 +27,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cz.msebera.android.httpclient.Header;
+import me.argha.tonu.R;
 import me.argha.tonu.app.EndPoints;
 import me.argha.tonu.helpers.MyPreferenceManager;
 

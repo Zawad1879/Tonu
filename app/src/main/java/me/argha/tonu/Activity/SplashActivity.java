@@ -1,4 +1,4 @@
-package me.argha.tonu;
+package me.argha.tonu.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 
+import me.argha.tonu.R;
 import me.argha.tonu.utils.AppConst;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 

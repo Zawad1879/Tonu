@@ -6,5 +6,5 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:background="@drawable/splash"
-    tools:context="me.argha.tonu.SplashActivity">
+    tools:context=".activity.SplashActivity">
 </LinearLayout>

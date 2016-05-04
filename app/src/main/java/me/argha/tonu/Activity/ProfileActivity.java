@@ -1,7 +1,9 @@
-package me.argha.tonu;
+package me.argha.tonu.activity;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import me.argha.tonu.R;
 
 public class ProfileActivity extends AppCompatActivity {
 

@@ -1,4 +1,4 @@
-package me.argha.tonu;
+package me.argha.tonu.adapter;
 
 import android.content.Context;
 import android.graphics.Typeface;
@@ -10,6 +10,8 @@ import android.widget.TextView;
 
 import java.util.HashMap;
 import java.util.List;
+
+import me.argha.tonu.R;
 
 /**
  * Created by sbsatter on 4/6/2016.

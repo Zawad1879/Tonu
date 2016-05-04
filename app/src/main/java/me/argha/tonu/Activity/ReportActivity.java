@@ -1,4 +1,4 @@
-package me.argha.tonu;
+package me.argha.tonu.activity;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import me.argha.tonu.R;
 
 public class ReportActivity extends AppCompatActivity implements OnClickListener{
     @Bind(R.id.report_name_textview)TextView reportNameTv;
