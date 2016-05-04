@@ -78,8 +78,8 @@ public class LoginActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         FacebookSdk.sdkInitialize(getApplicationContext());
         mCallbackManager = CallbackManager.Factory.create();
-       // LoginButton fbButton=(LoginButton)findViewById(R.id.login_button);
-      //  fbButton.registerCallback(mCallbackManager, mCallback);
+        // LoginButton fbButton=(LoginButton)findViewById(R.id.login_button);
+        //  fbButton.registerCallback(mCallbackManager, mCallback);
 
 
     }
@@ -117,8 +117,8 @@ public class LoginActivity extends AppCompatActivity {
 
     public void startFbLogin() {
 
-      //  FacebookSdk.sdkInitialize(getApplicationContext());
-       // mCallbackManager = CallbackManager.Factory.create();
+        //  FacebookSdk.sdkInitialize(getApplicationContext());
+        // mCallbackManager = CallbackManager.Factory.create();
         LoginManager.getInstance().registerCallback(mCallbackManager,
                 new FacebookCallback<LoginResult>() {
 
@@ -126,7 +126,7 @@ public class LoginActivity extends AppCompatActivity {
                     public void onSuccess(LoginResult loginResult) {
                         AccessToken accessToken = loginResult.getAccessToken();
                         profile = Profile.getCurrentProfile();
-                         Log.d("user proin mana: ", profile.getName());
+                        Log.d("user proin mana: ", profile.getName());
 
                        /* GraphRequest.newMeRequest(
                                 loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
@@ -209,10 +209,10 @@ public class LoginActivity extends AppCompatActivity {
 
         Log.d("user pro: ", profile.getName());
         Log.d("user id: ", profile.getId());
-       // Bitmap bitmap = getFacebookProfilePicture(profile.getId());
+        // Bitmap bitmap = getFacebookProfilePicture(profile.getId());
         try {
             Bitmap returned_bitmap = getCircleBitmap(new AsyncTaskRunner().execute(profile.getId()).get());
-          //  imageView2.setImageBitmap(returned_bitmap);
+            //  imageView2.setImageBitmap(returned_bitmap);
 
             try {
                 Thread.sleep(3000);
@@ -226,7 +226,7 @@ public class LoginActivity extends AppCompatActivity {
             byte[] byteArray = stream.toByteArray();
 
             Intent in1 = new Intent(this, MainActivity.class);
-           // in1.putExtra("image",byteArray);
+            // in1.putExtra("image",byteArray);
             in1.putExtra("BitmapImage",returned_bitmap);
             in1.putExtra("userName", profile.getName());
 
