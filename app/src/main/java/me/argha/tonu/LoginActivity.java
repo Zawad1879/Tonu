@@ -15,7 +15,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -27,6 +27,7 @@ import com.facebook.GraphResponse;
 import com.facebook.Profile;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -57,7 +58,29 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 public class LoginActivity extends AppCompatActivity {
 
     CallbackManager mCallbackManager;
+    private FacebookCallback<LoginResult> mCallback=new FacebookCallback<LoginResult>() {
+        @Override
+        public void onSuccess(LoginResult loginResult) {
+            AccessToken accessToken = loginResult.getAccessToken();
+            profile = Profile.getCurrentProfile();
+            Log.d("Ins onSux pro", profile.getName());
+        }
+
+        @Override
+        public void onCancel() {
+
+        }
+
+        @Override
+        public void onError(FacebookException error) {
+
+        }
+    };
+
     Profile profile;
+    String email;
+    String id;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +89,10 @@ public class LoginActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         FacebookSdk.sdkInitialize(getApplicationContext());
         mCallbackManager = CallbackManager.Factory.create();
+       // LoginButton fbButton=(LoginButton)findViewById(R.id.login_button);
+      //  fbButton.registerCallback(mCallbackManager, mCallback);
+
+
     }
 
 
@@ -74,12 +101,12 @@ public class LoginActivity extends AppCompatActivity {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(base));
     }
 
-    @OnClick(R.id.loginGuestBtn)
+    @OnClick(R.id.registrationRegularBtn)
     public void loginAsGuest(){
-        startActivity(new Intent(this, MainActivity.class));
+        startActivity(new Intent(this, regularRegistration.class));
     }
 
-    @OnClick(R.id.gPlusLoginBtn)
+    /*@OnClick(R.id.gPlusLoginBtn)
     public void startGPlusLogin(){
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
@@ -95,35 +122,78 @@ public class LoginActivity extends AppCompatActivity {
                 .build();
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(signInIntent, 1001);
-    }
+    }*/
 
     @OnClick(R.id.fbLoginBtn)
+
     public void startFbLogin() {
+
       //  FacebookSdk.sdkInitialize(getApplicationContext());
        // mCallbackManager = CallbackManager.Factory.create();
         LoginManager.getInstance().registerCallback(mCallbackManager,
                 new FacebookCallback<LoginResult>() {
+
                     @Override
                     public void onSuccess(LoginResult loginResult) {
                         AccessToken accessToken = loginResult.getAccessToken();
                         profile = Profile.getCurrentProfile();
-                        Log.d("user pro: ", profile.getName());
+                         Log.d("user proin mana: ", profile.getName());
+
+                       /* GraphRequest.newMeRequest(
+                                loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
+                                    @Override
+                                    public void onCompleted(JSONObject me, GraphResponse response) {
+                                        if (response.getError() != null) {
+                                            // handle error
+                                        } else {
+                                            email = me.optString("email");
+                                            Log.d("user email", email);
+                                            id = me.optString("id");
+                                            Log.d("user id", id);
+                                            // send email and id to your web server
+                                        }
+                                    }
+                                }).executeAsync();
+
+                        GraphRequest request = GraphRequest.newMeRequest(AccessToken.getCurrentAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
+                            @Override
+                            public void onCompleted(JSONObject object, GraphResponse response) {
+
+                                JSONObject json = response.getJSONObject();
+                                try {
+                                    if (json != null) {
+                                        String text = json.getString("email");
+                                        Log.d("email", text);
+
+                                    }
+
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                        Bundle parameters = new Bundle();
+                        parameters.putString("fields", "id,name,link,email,picture");
+                        request.setParameters(parameters);
+                        request.executeAsync();
+
+                        Log.d("user email", email);
+                        Log.d("user id", id);
 
 
-
-                        /*Util.printDebug("FB login", "success");
+                        Util.printDebug("FB login", "success");
                         GraphRequest request = GraphRequest.newMeRequest(
                                 loginResult.getAccessToken(),
                                 new GraphRequest.GraphJSONObjectCallback() {
                                     @Override
                                     public void onCompleted(JSONObject object, GraphResponse response) {
                                         Util.printDebug("FB response", response.toString());
-*//*                                        try {
+                                        try {
                                             //loginUser(null, object.getString("name"), object.getString("email"), object.getJSONObject("picture").getJSONObject("data").getString("url"), null, null, null);
                                         //} catch (JSONException e) {
                                             e.printStackTrace();
                                             Util.printDebug("Fb login excep", e.getMessage());
-                                        }*//*
+                                        }
                                     }
                                 });
                         Bundle parameters = new Bundle();
@@ -135,11 +205,13 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onCancel() {
                         //     Log.d("user pro: ", profile.getName());
+                        Toast.makeText(getBaseContext(), "Login Cancelled", Toast.LENGTH_SHORT).show();
                         Util.printDebug("FB login", "cancel");
                     }
 
                     @Override
                     public void onError(FacebookException exception) {
+                        Toast.makeText(getBaseContext(), "Problem connecting to Facebook", Toast.LENGTH_SHORT).show();
                         Util.printDebug("FB login error", exception.getMessage());
                     }
                 });
@@ -153,16 +225,16 @@ public class LoginActivity extends AppCompatActivity {
             Bitmap returned_bitmap = getCircleBitmap(new AsyncTaskRunner().execute(profile.getId()).get());
           //  imageView2.setImageBitmap(returned_bitmap);
 
-         /*   try {
+            try {
                 Thread.sleep(3000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
-            }*/
+            }
             LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile", "email"));
 
-            /*ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
             returned_bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-            byte[] byteArray = stream.toByteArray();*/
+            byte[] byteArray = stream.toByteArray();
 
             Intent in1 = new Intent(this, MainActivity.class);
            // in1.putExtra("image",byteArray);
@@ -218,7 +290,8 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Util.printDebug("Request code", requestCode + "");
+        mCallbackManager.onActivityResult(requestCode, resultCode, data);
+        /*Util.printDebug("Request code", requestCode + "");
         switch (requestCode){
             case 64206:
                 mCallbackManager.onActivityResult(requestCode, resultCode, data);
@@ -227,7 +300,7 @@ public class LoginActivity extends AppCompatActivity {
                 GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
                 handleSignInResult(result);
                 break;
-        }
+        }*/
     }
 
     private class AsyncTaskRunner extends AsyncTask<String, String, Bitmap> {
