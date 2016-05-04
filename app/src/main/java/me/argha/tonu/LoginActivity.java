@@ -22,21 +22,11 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
-import com.facebook.GraphRequest;
-import com.facebook.GraphResponse;
 import com.facebook.Profile;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
-import com.facebook.login.widget.LoginButton;
-import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -45,7 +35,6 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 
-import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import me.argha.tonu.utils.Util;
@@ -103,7 +92,7 @@ public class LoginActivity extends AppCompatActivity {
 
     @OnClick(R.id.registrationRegularBtn)
     public void loginAsGuest(){
-        startActivity(new Intent(this, regularRegistration.class));
+        startActivity(new Intent(this, RegularRegistrationActivity.class));
     }
 
     /*@OnClick(R.id.gPlusLoginBtn)

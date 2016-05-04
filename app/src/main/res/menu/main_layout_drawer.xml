@@ -18,6 +18,11 @@
             android:id="@+id/faq"
             android:icon="@drawable/ic_menu_camera"
             android:title="FAQ"/>
+        <item
+            android:id="@+id/logout"
+            android:title="Logout"/>
+
+
     </group>
 
     <item android:title="Know the rules">

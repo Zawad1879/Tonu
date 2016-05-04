@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -43,13 +44,17 @@ public class MainActivity extends AppCompatActivity
     String username;
 
 
+
     MyPreferenceManager preferenceManager;
     boolean clicked=false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_layout);
         preferenceManager= new MyPreferenceManager(this);
+        Toast.makeText(this,preferenceManager.pref.getBoolean(getResources().getString(R.string.is_user_logged_in),false)+"",Toast.LENGTH_LONG).show();
+        Toast.makeText(this,preferenceManager.pref.getString(getResources().getString(R.string.username),"Shoumik"),Toast.LENGTH_LONG).show();
         ButterKnife.bind(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -115,7 +120,7 @@ public class MainActivity extends AppCompatActivity
                         public void run() {
                             mainHelpBtn.setImageResource(R.drawable.ic_alarm2);
                         }
-                    },3000);
+                    }, 3000);
                 }else {
                     clicked=false;
                     mainHelpBtn.setImageResource(R.drawable.ic_alarm2);
@@ -205,6 +210,9 @@ public class MainActivity extends AppCompatActivity
             intent= new Intent(MainActivity.this,ProfileActivity.class);
         } else if (id == R.id.faq) {
             intent= new Intent(MainActivity.this,FAQActivity.class);
+        } else if (id == R.id.logout) {
+            preferenceManager.clear();
+            intent = new Intent(MainActivity.this, LoginActivity.class);
         }
         else if (id == R.id.laws) {
 

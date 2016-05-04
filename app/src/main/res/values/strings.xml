@@ -12,4 +12,10 @@
     <string name="title_activity_report">Report</string>
     <string name="dami_text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illo necessitatibus, nesciunt rem soluta suscipit ullam voluptate! Aspernatur, consectetur deserunt expedita fuga, id impedit inventore iusto nobis qui repellendus totam voluptate.</string>
     <string name="title_activity_identify">Identify Yourself</string>
+
+    <string name="is_user_logged_in">logged_in</string>
+    <string name="username">username</string>
+    <string name="user_id">user_id</string>
+    <string name="email">email</string>
+    <string name="phone">phone</string>
 </resources>
