@@ -99,6 +99,8 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.mainHelpBtn:
                 if(!clicked){
+
+                    //TODO get location
                     String name= /*preferenceManager.getUser().getName();*/"Nabil";
                     String messageToSend = name+" is in an emergency and would like your help" +
                             ".\nAddress: Map coordinates\nLocation: 23.803435, 90.378862\n" +
@@ -113,7 +115,8 @@ public class MainActivity extends AppCompatActivity
 
                     mainHelpBtn.setImageResource(R.drawable.ic_alaram);
                     clicked=true;
-                    Util.showToast(this,"Alert has been sent to emergeny contacts and nearest police stations");
+                    Util.showToast(this,"Alert has been sent to emergency contacts and nearest " +
+                            "police stations");
                     android.os.Handler handler= new android.os.Handler();
                     handler.postDelayed(new Runnable() {
                         @Override

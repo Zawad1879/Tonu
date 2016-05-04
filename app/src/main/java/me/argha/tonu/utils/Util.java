@@ -14,6 +14,8 @@ import android.util.Log;
 import android.util.Patterns;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -171,5 +173,23 @@ public class Util {
         Date date=new Date(calendar.getTimeInMillis());
         SimpleDateFormat dateOnly=new SimpleDateFormat("dd'/'MM'/'yyyy");
         return dateOnly.format(date);
+    }
+
+    public static String getLatLonString(LatLng position) {
+        double lat;
+        double lon;
+        lat= position.latitude;
+        lon= position.longitude;
+        String loc=lat+","+lon;
+        Log.e("UTIL.getLatLonString",loc);
+        return loc;
+    }
+
+    public static LatLng getLatLon(String loc) {
+        loc=loc.trim();
+        String [] latLon= loc.split(",");
+        LatLng latLng= new LatLng(Double.parseDouble(latLon[0]),Double.parseDouble
+                (latLon[1]));
+        return latLng;
     }
 }
