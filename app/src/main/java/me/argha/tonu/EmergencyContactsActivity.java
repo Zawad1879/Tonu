@@ -14,6 +14,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Set;
 
 import butterknife.Bind;
@@ -48,11 +49,14 @@ public class EmergencyContactsActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         preferenceManager= new MyPreferenceManager(this);
 
-        contactItemArrayList=new ArrayList<>();
-        Set<String> contacts=preferenceManager.getEmergencyContactNames();
-        preferenceManager.setEmergencyContactNames("Zawad","Shahed","Junayed");
-        preferenceManager.setEmergencyContactNumbers("01990123387","01680774007","01676768587");
-        contactItemArrayList= getEmergencyContacts(contacts);
+//        contactItemArrayList=new ArrayList<>();
+        Set<String> contactNames=preferenceManager.getEmergencyContactNames();
+        Set<String> contactNumbers=preferenceManager.getEmergencyContactNumbers();
+        if(contactNames.size()==0 || contactNumbers.size()==0){
+            preferenceManager.setEmergencyContactNames("Zawad","Shahed","Junayed");
+            preferenceManager.setEmergencyContactNumbers("01990123387","01680774007","01676768587");
+        }
+        contactItemArrayList= getEmergencyContacts(contactNames, contactNumbers);
 //        contactItemArrayList.add(new ContactItem("Turzo","01719858641"));
 //        contactItemArrayList.add(new ContactItem("Mehedi","01914596128"));
 //        contactItemArrayList.add(new ContactItem("Argha","01911190527"));
@@ -61,10 +65,18 @@ public class EmergencyContactsActivity extends AppCompatActivity {
         forumListView.setAdapter(contactListAdapter=new ContactListAdapter());
     }
 
-    private ArrayList<ContactItem> getEmergencyContacts(Set<String> emergencyContacts) {
+    private ArrayList<ContactItem> getEmergencyContacts(Set<String> emergencyNames,
+                                                        Set<String>emergencyNumbers) {
         ArrayList<ContactItem> contacts= new ArrayList<>();
-        for(String str:emergencyContacts){
-            contacts.add(new ContactItem(str,HARDCODED_NUMBER));
+        Iterator itName, itNumber;
+        itName= emergencyNames.iterator();
+        itNumber= emergencyNumbers.iterator();
+        while(itName.hasNext()){
+            String name= itName.next().toString();
+            String number= itNumber.next().toString();
+            contacts.add(new ContactItem(name,number));
+//            itName.next();
+//            itNumber.next();
         }
         return contacts;
     }
