@@ -279,7 +279,7 @@ public class DangerZone extends AppCompatActivity implements OnMapReadyCallback,
                 setData();
                 params= new RequestParams();
                 //TODO change sbs to dynamic
-                params.put("user_id","sbs");
+                params.put("user_id",preferenceManager.pref.getString("user_id","No user stored"));
                 String location= Util.getLatLonString(dangerPos);
                 Log.e("DANGERZONE","location: "+location);
                 params.put("location",location);
