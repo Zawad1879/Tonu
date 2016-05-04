@@ -190,6 +190,7 @@ public class Util {
         String [] latLon= loc.split(",");
         LatLng latLng= new LatLng(Double.parseDouble(latLon[0]),Double.parseDouble
                 (latLon[1]));
+        Log.e("getLatLon_UTIL",latLng.latitude+","+latLng.longitude);
         return latLng;
     }
 }

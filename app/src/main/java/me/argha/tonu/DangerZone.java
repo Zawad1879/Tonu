@@ -2,6 +2,7 @@ package me.argha.tonu;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
@@ -26,6 +27,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
+import com.google.maps.android.heatmaps.Gradient;
 import com.google.maps.android.heatmaps.HeatmapTileProvider;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -67,12 +69,13 @@ public class DangerZone extends AppCompatActivity implements OnMapReadyCallback,
 
         setUpGoogleApiClient();
 
-        init();
+
 
 
     }
 
     private void init() {
+
         preferenceManager= new MyPreferenceManager(this);
         context=this;
         asyncHttpClient= new AsyncHttpClient();
@@ -87,6 +90,7 @@ public class DangerZone extends AppCompatActivity implements OnMapReadyCallback,
                 LatLng latLng= Util.getLatLon(loc);
                 dangerData.add(latLng);
             }
+            Log.e("DZ",dangerData.toString());
         }
         setData();
     }
@@ -103,6 +107,7 @@ public class DangerZone extends AppCompatActivity implements OnMapReadyCallback,
                                 ("danger_zones"));
 
                         preferenceManager.editor.putStringSet("dangerHistory",dangers);
+                        preferenceManager.editor.commit();
 
                     }
                 } catch (JSONException e) {
@@ -118,8 +123,10 @@ public class DangerZone extends AppCompatActivity implements OnMapReadyCallback,
         Set<String> dangers= preferenceManager.pref.getStringSet("dangerHistory",new HashSet<String>());
 
         for(int i=0; i<danger_zones.length(); i++){
-            String location= danger_zones.getString(i);
+            JSONObject obj= danger_zones.getJSONObject(i);
+            String location= obj.getString("location");
             dangers.add(location);
+            Log.e("DANGERZONE_LOCATIONS",location);
         }
         return dangers;
     }
@@ -163,6 +170,7 @@ public class DangerZone extends AppCompatActivity implements OnMapReadyCallback,
             MapFragment mapFragment = (MapFragment) getFragmentManager()
                     .findFragmentById(R.id.mapFragment);
             mapFragment.getMapAsync(this);
+            googleMap= mapFragment.getMap();
 
 
 //            if (googleMap == null) {
@@ -177,6 +185,16 @@ public class DangerZone extends AppCompatActivity implements OnMapReadyCallback,
     }
 
     private void setData() {
+        // Create the gradient.
+        int[] colors = {
+//                Color.rgb(102, 225, 0), // green
+                Color.rgb(255, 0, 0)    // red
+        };
+
+        float[] startPoints = {
+                0.1f
+        };
+
 //        dangerData.add(new LatLng(23.802092176340878,90.40835995227098));
         if(dangerData.size()<=0)
             return;
@@ -184,6 +202,7 @@ public class DangerZone extends AppCompatActivity implements OnMapReadyCallback,
 
             // Create a heat map tile provider, passing it the latlngs of the police stations.
             heatmapTileProvider = new HeatmapTileProvider.Builder()
+                    .gradient(new Gradient(colors,startPoints))
                     .data(dangerData)
                     .build();
             // Add a tile overlay to the map, using the heat map tile provider.
@@ -193,7 +212,7 @@ public class DangerZone extends AppCompatActivity implements OnMapReadyCallback,
         }
         else{
             heatmapTileProvider.setData(dangerData);
-            heatmapTileProvider.setRadius(40);
+            heatmapTileProvider.setRadius(50);
             overlay.clearTileCache();
         }
     }
@@ -204,6 +223,7 @@ public class DangerZone extends AppCompatActivity implements OnMapReadyCallback,
         map.setMyLocationEnabled(true);
 //        LatLng dangerCoordinates= new LatLng(23.8103,90.4125);
         setUpMarkersAndMap();
+        init();
     }
 
     private void setUpMarkersAndMap() {
@@ -247,18 +267,20 @@ public class DangerZone extends AppCompatActivity implements OnMapReadyCallback,
 
             private void setDangerDetail() {
                 String str= editText.getText().toString();
-                if(str==null || str.equals("")){
-                    return;
-                }
+//                if(str==null || str.equals("")){
+//                    return;
+//                }
                 Marker danger= googleMap.addMarker(new MarkerOptions()
                         .title(str)
                         .position(latLng)
                         .draggable(false));
-
+                LatLng dangerPos = danger.getPosition();
+                dangerData.add(dangerPos);
+                setData();
                 params= new RequestParams();
                 //TODO change sbs to dynamic
                 params.put("user_id","sbs");
-                String location= Util.getLatLonString(danger.getPosition());
+                String location= Util.getLatLonString(dangerPos);
                 Log.e("DANGERZONE","location: "+location);
                 params.put("location",location);
                 asyncHttpClient.post(EndPoints.ADDDANGER,params,new JsonHttpResponseHandler(){
@@ -275,6 +297,7 @@ public class DangerZone extends AppCompatActivity implements OnMapReadyCallback,
                         }
                     }
                 });
+                danger.setVisible(false);
             }
         });
     }
@@ -283,12 +306,16 @@ public class DangerZone extends AppCompatActivity implements OnMapReadyCallback,
         Location myLoc= LocationServices.FusedLocationApi
                 .getLastLocation(googleApiClient);
         LatLng loc=null;
+
         if (myLoc != null) {
             double latitude = myLoc.getLatitude();
             double longitude = myLoc.getLongitude();
             loc= new LatLng(latitude, longitude);
+        }else{
+            Log.e("DANGERZONE","myLoc is null");
+            loc= new LatLng(24.369498, 88.626178);
         }
-        Log.e("DANGERZONE","myLoc is null");
+
         return loc;
     }
 

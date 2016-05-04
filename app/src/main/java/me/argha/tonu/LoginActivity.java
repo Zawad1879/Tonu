@@ -148,6 +148,7 @@ public class LoginActivity extends AppCompatActivity {
                             @Override
                             public void onCompleted(JSONObject object, GraphResponse response) {
 
+
                                 JSONObject json = response.getJSONObject();
                                 try {
                                     if (json != null) {
