@@ -204,6 +204,7 @@ public class MainActivity extends AppCompatActivity
         Intent intent=null;
         int id = item.getItemId();
         if (id == R.id.settings) {
+            intent= new Intent(MainActivity.this,SettingsActivity.class);
 
         } else if (id == R.id.emergency_contacts) {
             intent= new Intent(MainActivity.this,EmergencyContactsActivity.class);
