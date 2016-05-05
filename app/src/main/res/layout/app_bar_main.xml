@@ -10,6 +10,6 @@
 
     <include layout="@layout/appbar"/>
 
-    <include layout="@layout/content_main"/>
+    <include layout="@layout/content_main_be"/>
 
 </android.support.design.widget.CoordinatorLayout>
