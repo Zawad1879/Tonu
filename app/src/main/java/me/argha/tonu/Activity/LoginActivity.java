@@ -48,7 +48,7 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 public class LoginActivity extends AppCompatActivity {
 
     CallbackManager mCallbackManager;
-    private FacebookCallback<LoginResult> mCallback=new FacebookCallback<LoginResult>() {
+   /* private FacebookCallback<LoginResult> mCallback=new FacebookCallback<LoginResult>() {
         @Override
         public void onSuccess(LoginResult loginResult) {
             AccessToken accessToken = loginResult.getAccessToken();
@@ -65,7 +65,7 @@ public class LoginActivity extends AppCompatActivity {
         public void onError(FacebookException error) {
 
         }
-    };
+    };*/
 
     Profile profile;
     String email;
@@ -83,6 +83,25 @@ public class LoginActivity extends AppCompatActivity {
         //  fbButton.registerCallback(mCallbackManager, mCallback);
 
 
+
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        mCallbackManager.onActivityResult(requestCode, resultCode, data);
+        //Log.d("In onactresul: ", "Hello");
+        /*Util.printDebug("Request code", requestCode + "");
+        switch (requestCode){
+            case 64206:
+                mCallbackManager.onActivityResult(requestCode, resultCode, data);
+                break;
+            case 1001:
+                GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+                handleSignInResult(result);
+                break;
+        }*/
+
     }
 
 
@@ -92,9 +111,15 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     @OnClick(R.id.registrationRegularBtn)
-    public void loginAsGuest(){
+    public void registerAsGuest(){
         startActivity(new Intent(this, RegularRegistrationActivity.class));
     }
+
+    @OnClick(R.id.loginRegularBtn)
+    public void loginAsGuest(){
+        startActivity(new Intent(this, RegularLoginActivity.class));
+    }
+
 
     /*@OnClick(R.id.gPlusLoginBtn)
     public void startGPlusLogin(){
@@ -117,9 +142,10 @@ public class LoginActivity extends AppCompatActivity {
     @OnClick(R.id.fbLoginBtn)
 
     public void startFbLogin() {
+        LoginManager.getInstance().logInWithReadPermissions(LoginActivity.this, (Arrays.asList("public_profile", "user_friends", "user_birthday", "user_about_me", "email")));
 
-        //  FacebookSdk.sdkInitialize(getApplicationContext());
-        // mCallbackManager = CallbackManager.Factory.create();
+          FacebookSdk.sdkInitialize(getApplicationContext());
+          mCallbackManager = CallbackManager.Factory.create();
         LoginManager.getInstance().registerCallback(mCallbackManager,
                 new FacebookCallback<LoginResult>() {
 
@@ -278,21 +304,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        mCallbackManager.onActivityResult(requestCode, resultCode, data);
-        /*Util.printDebug("Request code", requestCode + "");
-        switch (requestCode){
-            case 64206:
-                mCallbackManager.onActivityResult(requestCode, resultCode, data);
-                break;
-            case 1001:
-                GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-                handleSignInResult(result);
-                break;
-        }*/
-    }
+
 
     private class AsyncTaskRunner extends AsyncTask<String, String, Bitmap> {
 

@@ -29,7 +29,9 @@ import butterknife.OnClick;
 import cz.msebera.android.httpclient.Header;
 import me.argha.tonu.R;
 import me.argha.tonu.app.EndPoints;
+import me.argha.tonu.app.MyApplication;
 import me.argha.tonu.helpers.MyPreferenceManager;
+import me.argha.tonu.model.User;
 
 public class RegularRegistrationActivity extends AppCompatActivity {
 
@@ -112,21 +114,26 @@ public class RegularRegistrationActivity extends AppCompatActivity {
                 preferenceManager.editor.putString(getResources().getString(R.string.username), username.getText().toString());
                 preferenceManager.editor.putString(getResources().getString(R.string.user_id), id.getText().toString());
                 preferenceManager.editor.putString(getResources().getString(R.string.email), email.getText().toString());
+                preferenceManager.editor.putString(getResources().getString(R.string.phone), phonenumber.getText().toString());
                 preferenceManager.editor.commit();
 
                 Boolean is_user_logged_in=true;
                 String name=username.getText().toString();
                 String user_id=id.getText().toString();
                 String mail= email.getText().toString();
+                String phone=phonenumber.getText().toString();
 
                 AsyncHttpClient asyncHttpClient=new AsyncHttpClient();
+                asyncHttpClient.setMaxRetriesAndTimeout(5,20000);
                 RequestParams params=new RequestParams();
-                params.put(getResources().getString(R.string.is_user_logged_in),true);
+//                params.put(getResources().getString(R.string.is_user_logged_in),true);
                 params.put(getResources().getString(R.string.username), username.getText().toString());
                 params.put(getResources().getString(R.string.user_id), id.getText().toString());
                 params.put(getResources().getString(R.string.email), email.getText().toString());
+                params.put(getResources().getString(R.string.phone), phonenumber.getText().toString());
+
                 params.put("gcm_registration_id","gcm_id");
-                String url= "http://192.168.0.106/tonu/v1/user/login";
+                String url= EndPoints.LOGIN+"/user/login";
                 asyncHttpClient.post(EndPoints.LOGIN,params,new JsonHttpResponseHandler(){
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -142,6 +149,10 @@ public class RegularRegistrationActivity extends AppCompatActivity {
                     }
                 });
               //  as.post(EndP)
+
+//                User user=new User(user_id,name,mail,phone);
+//                MyApplication.getInstance().getPrefManager().storeUser(user);
+
                 startActivity(new Intent(RegularRegistrationActivity.this, MainActivity.class));
 
 //                    @Override
@@ -258,7 +269,7 @@ public class RegularRegistrationActivity extends AppCompatActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(RegularRegistrationActivity.this, MainActivity.class);
+                Intent i = new Intent(RegularRegistrationActivity.this, RegularLoginActivity.class);
                 startActivity(i);
             }
         });
@@ -297,7 +308,7 @@ public class RegularRegistrationActivity extends AppCompatActivity {
 
     @OnClick(R.id.loginButton)
     public void submit(){
-        Intent i = new Intent(RegularRegistrationActivity.this, MainActivity.class);
+        Intent i = new Intent(RegularRegistrationActivity.this, RegularLoginActivity.class);
         startActivity(i);
     }
 

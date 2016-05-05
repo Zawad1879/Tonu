@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    @OnClick({R.id.mainReportBtn,R.id.mainDangerZoneBtn,R.id.mainHelpBtn,R.id.mainForumBtn,R.id.mainExpertHelpBtn})
+    @OnClick({R.id.mainReportBtn,R.id.mainDangerZoneBtn,R.id.mainHelpBtn,R.id.mainExpertHelpBtn})
     public void mainBtnClicks(View view){
         switch (view.getId()){
             case R.id.mainReportBtn:
@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity
                     }
 
 
-                    mainHelpBtn.setImageResource(R.drawable.ic_alaram);
+                    mainHelpBtn.setImageResource(R.drawable.bebutton);
                     clicked=true;
                     Util.showToast(this,"Alert has been sent to emergency contacts and nearest " +
                             "police stations");
@@ -119,20 +119,20 @@ public class MainActivity extends AppCompatActivity
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            mainHelpBtn.setImageResource(R.drawable.ic_alarm2);
+                            mainHelpBtn.setImageResource(R.drawable.bebuttondim);
                         }
                     }, 3000);
                 }else {
                     clicked=false;
-                    mainHelpBtn.setImageResource(R.drawable.ic_alarm2);
+                    mainHelpBtn.setImageResource(R.drawable.bebutton);
                 }
                 break;
             case R.id.mainExpertHelpBtn:
                 showHelpOptionDialog();
                 break;
-            case R.id.mainForumBtn:
+            /*case R.id.mainForumBtn:
                 startActivity(new Intent(this,ForumActivity.class));
-                break;
+                break;*/
 
         }
     }
