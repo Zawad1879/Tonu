@@ -5,9 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -23,12 +21,21 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.Set;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cz.msebera.android.httpclient.Header;
 import me.argha.tonu.R;
+import me.argha.tonu.app.EndPoints;
 import me.argha.tonu.helpers.MyPreferenceManager;
 import me.argha.tonu.utils.Util;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
@@ -36,6 +43,7 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private static final String TAG = MainActivity.class.getSimpleName();
     Bitmap bmp;
     @Bind(R.id.mainHelpBtn)
     ImageView mainHelpBtn;
@@ -92,7 +100,8 @@ public class MainActivity extends AppCompatActivity
                 startActivity(new Intent(this,SharedLocationActivity.class));
                 break;
             case R.id.mainDangerZoneBtn:
-                Toast.makeText(MainActivity.this, "Showing all incidents previously occured", Toast
+                Toast.makeText(MainActivity.this, "Showing area-crime densities",
+                        Toast
                         .LENGTH_SHORT).show();
                 startActivity(new Intent(this,DangerZone.class));
                 break;
@@ -100,14 +109,33 @@ public class MainActivity extends AppCompatActivity
                 if(!clicked){
 
                     //TODO get location
-                    String name= /*preferenceManager.getUser().getName();*/"Nabil";
+                    String name= preferenceManager.pref.getString("name","User");
+                    double lat=24.372062,lon= 88.624140;
                     String messageToSend = name+" is in an emergency and would like your help" +
-                            ".\nAddress: Map coordinates\nLocation: 23.803435, 90.378862\n" +
-                            "http://maps.google.com/?q=23.803435,90.378862";
+                            ".\nAddress: Map coordinates\nLocation: "+lat+", "+lon+"\n" +
+                            "http://maps.google.com/?q="+lat+", "+lon;
 //                    String number = "01621209959";
                     Set<String> numbers= preferenceManager.getEmergencyContactNumbers();
                     for(String n: numbers){
 //                        SmsManager.getDefault().sendTextMessage(n, null, messageToSend, null,null);
+                        String [] numArray= {n};
+                        AsyncHttpClient asyncHttpClient= new AsyncHttpClient();
+                        RequestParams params= new RequestParams();
+                        params.put("user_id",preferenceManager.pref.getString("user_id",
+                                "default_user"));
+                        params.put("location",lat+","+lon);
+                        params.put("receiver_numbers",numArray);
+                        asyncHttpClient.post(EndPoints.SENDLOCATIONBYNUMBER,params,new JsonHttpResponseHandler(){
+                            @Override
+                            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                                super.onSuccess(statusCode, headers, response);
+                                try {
+                                    Log.e(TAG,response.toString(4));
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
                         Log.e("MainActivity","Sending a message to "+n);
                     }
 

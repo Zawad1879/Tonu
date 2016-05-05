@@ -40,7 +40,7 @@ import me.argha.tonu.model.Message;
 public class SharedLocationActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, OnMapReadyCallback {
 
 
-    private String TAG = MainActivity.class.getSimpleName();
+    private String TAG = SharedLocationActivity.class.getSimpleName();
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private BroadcastReceiver mRegistrationBroadcastReceiver;
     GoogleApiClient googleApiClient;
@@ -227,6 +227,11 @@ public class SharedLocationActivity extends AppCompatActivity implements GoogleA
         LatLng myLocation=getMyLocation();
         Log.e(TAG, myLocation.latitude+","+myLocation.longitude);
         Bundle extras= getIntent().getExtras();
+        if(extras==null){
+            Toast.makeText(SharedLocationActivity.this, "No location has been shared with you"
+                    , Toast.LENGTH_SHORT).show();
+            return;
+        }
         double lat = extras.getDouble("latitude");
         double lon = extras.getDouble("longitude");
         Log.e(TAG,lat+","+lon);
