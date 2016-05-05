@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -110,22 +111,50 @@ public class MainActivity extends AppCompatActivity
                         Log.e("MainActivity","Sending a message to "+n);
                     }
 
-
+                  //  showBeeAnimation();
                     mainHelpBtn.setImageResource(R.drawable.bebutton);
                     clicked=true;
-                    Util.showToast(this,"Alert has been sent to emergency contacts and nearest " +
+                    Util.showToast(this, "Alert has been sent to emergency contacts and nearest " +
                             "police stations");
                     android.os.Handler handler= new android.os.Handler();
+                    mainHelpBtn.setImageResource(R.drawable.afterbee);
+
+
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            mainHelpBtn.setImageResource(R.drawable.bebuttondim);
+                            //mainHelpBtn.setImageResource(R.drawable.afterbee);
+                            mainHelpBtn.setImageResource(R.drawable.bebutton);
+
                         }
-                    }, 3000);
+                    }, 200);
+
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mainHelpBtn.setImageResource(R.drawable.afterbee);
+
+
+                        }
+                    }, 700);
+
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mainHelpBtn.setImageResource(R.drawable.bebutton);
+
+
+                        }
+                    }, 1200);
+
+
+
+
                 }else {
                     clicked=false;
                     mainHelpBtn.setImageResource(R.drawable.bebutton);
                 }
+              //  showBeeAnimation();
                 break;
             case R.id.mainExpertHelpBtn:
                 showHelpOptionDialog();
@@ -137,6 +166,39 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    private void showBeeAnimation() {
+        mainHelpBtn.setImageResource(R.drawable.bebutton);
+        clicked=true;
+        Util.showToast(this,"Alert has been sent to emergency contacts and nearest " +
+                "police stations");
+        android.os.Handler handler= new android.os.Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mainHelpBtn.setImageResource(R.drawable.afterbee);
+            }
+        }, 500);
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mainHelpBtn.setImageResource(R.drawable.bebutton);
+            }
+        }, 500);
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mainHelpBtn.setImageResource(R.drawable.afterbee);
+            }
+        }, 500);
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mainHelpBtn.setImageResource(R.drawable.bebutton);
+            }
+        }, 500);
+    }
+
+
     private void showHelpOptionDialog() {
         AlertDialog.Builder builder=new AlertDialog.Builder(this)
                 .setSingleChoiceItems(new String[]{"CHAT","TALK"}, -1, new DialogInterface.OnClickListener() {
@@ -147,9 +209,9 @@ public class MainActivity extends AppCompatActivity
                                 startActivity(new Intent(MainActivity.this,ChatActivity.class));
                                 break;
                             case 1:
-                                Intent callIntent = new Intent(Intent.ACTION_CALL);
+                                /*Intent callIntent = new Intent(Intent.ACTION_CALL);
                                 callIntent.setData(Uri.parse("tel:1234"));
-                                startActivity(callIntent);
+                                startActivity(callIntent);*/
                                 break;
                         }
                         dialog.dismiss();
