@@ -260,6 +260,7 @@ public class DangerZone extends AppCompatActivity implements OnMapReadyCallback,
                     public void onClick(View v) {
                         setDangerDetail();
                         dialog.dismiss();
+
                     }
                 });
 

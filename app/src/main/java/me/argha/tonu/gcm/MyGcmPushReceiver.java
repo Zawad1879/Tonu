@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.gms.gcm.GcmListenerService;
 
@@ -15,7 +14,6 @@ import org.json.JSONObject;
 
 import me.argha.tonu.activity.MainActivity;
 import me.argha.tonu.app.Config;
-import me.argha.tonu.app.MyApplication;
 import me.argha.tonu.model.Message;
 import me.argha.tonu.model.User;
 
@@ -42,7 +40,8 @@ public class MyGcmPushReceiver extends GcmListenerService {
         String flag = bundle.getString("flag");
 //        String timestamp = bundle.getString("created_at");
         Boolean isBackground = Boolean.valueOf(bundle.getString("is_background"));
-
+//        Toast.makeText(MyGcmPushReceiver.this, "Push notification is received", Toast.LENGTH_SHORT).show();
+        Log.e(TAG,"Push notification is received");
         Log.e(TAG, "From: " + from);
         Log.e(TAG, "Title: " + title);
         Log.e(TAG, "data: " + data);
@@ -54,11 +53,11 @@ public class MyGcmPushReceiver extends GcmListenerService {
         if (flag == null)
             return;
 
-        if(MyApplication.getInstance().getPrefManager().getUser() == null){
-            // user is not logged in, skipping push notification
-            Log.e(TAG, "user is not logged in, skipping push notification");
-            return;
-        }
+//        if(MyApplication.getInstance().getPrefManager().getUser() == null){
+//            // user is not logged in, skipping push notification
+//            Log.e(TAG, "user is not logged in, skipping push notification");
+//            return;
+//        }
 
         switch (Integer.parseInt(flag)) {
 //            case Config.PUSH_TYPE_CHATROOM:
@@ -67,7 +66,11 @@ public class MyGcmPushReceiver extends GcmListenerService {
 //                break;
             case Config.PUSH_TYPE_USER:
                 // push notification is specific to user
-                processUserMessage(title, isBackground, data);
+                try {
+                    processUserMessage(title, isBackground, data);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 break;
         }
 //        if (!NotificationUtils.isAppIsInBackground(getApplicationContext())) {
@@ -97,34 +100,58 @@ public class MyGcmPushReceiver extends GcmListenerService {
      * Processing user specific push message
      * It will be displayed with / without image in push notification tray
      * */
-    private void processUserMessage(String title, boolean isBackground, String data) {
+    private void processUserMessage(String title, boolean isBackground, String data) throws JSONException {
         if (!isBackground) {
+            boolean isMsgALocation=false;
 
+            JSONObject datObj = new JSONObject(data);
+            String imageUrl = datObj.getString("image");
+            User user = new User();
+            Message message = new Message();
+            String location = "UNINITIALIZED LOCATION";
             try {
-                JSONObject datObj = new JSONObject(data);
 
-                String imageUrl = datObj.getString("image");
+                if (datObj.getString("type").equals("location")){
+                    isMsgALocation=true;
+                    location= datObj.getString("location");
 
-                JSONObject mObj = datObj.getJSONObject("message");
-                Message message = new Message();
-                message.setMessage(mObj.getString("message"));
-                message.setId(mObj.getString("message_id"));
-                message.setCreatedAt(mObj.getString("created_at"));
+                }else{
+                    JSONObject mObj = datObj.getJSONObject("message");
+                    message.setMessage(mObj.getString("message"));
+                    message.setId(mObj.getString("message_id"));
+                    message.setCreatedAt(mObj.getString("created_at"));
 
-                JSONObject uObj = datObj.getJSONObject("user");
-                User user = new User();
-                user.setId(uObj.getString("user_id"));
-                user.setEmail(uObj.getString("email"));
-                user.setName(uObj.getString("name"));
-                message.setSender(user);
+                    JSONObject uObj = datObj.getJSONObject("user");
+
+                    user.setId(uObj.getString("user_id"));
+                    user.setEmail(uObj.getString("email"));
+                    user.setName(uObj.getString("name"));
+                    message.setSender(user);
+                }
+
 
                 // verifying whether the app is in background or foreground
                 if (!NotificationUtils.isAppIsInBackground(getApplicationContext())) {
 
                     // app is in foreground, broadcast the push message
                     Intent pushNotification = new Intent(Config.PUSH_NOTIFICATION);
-                    pushNotification.putExtra("type", Config.PUSH_TYPE_USER);
-                    pushNotification.putExtra("message", message);
+                    if(isMsgALocation){
+                        pushNotification.putExtra("type", Config.PUSH_TYPE_LOCATION);
+                        pushNotification.putExtra("location", location);
+                        Intent resultIntent = new Intent(getApplicationContext(), MainActivity.class);
+
+                        // check for push notification image attachment
+                        if (TextUtils.isEmpty(imageUrl)) {
+                            showNotificationMessage(getApplicationContext(), title, user.getName() + " : " + message.getMessage(), message.getCreatedAt(), resultIntent);
+                        } else {
+                            // push notification contains image
+                            // show it with the image
+                            showNotificationMessageWithBigImage(getApplicationContext(), title, message.getMessage(), message.getCreatedAt(), resultIntent, imageUrl);
+                        }
+                    }else{
+                        pushNotification.putExtra("type", Config.PUSH_TYPE_USER);
+                        pushNotification.putExtra("message", message);
+                    }
                     LocalBroadcastManager.getInstance(this).sendBroadcast(pushNotification);
 
                     // play notification sound
@@ -146,7 +173,7 @@ public class MyGcmPushReceiver extends GcmListenerService {
                 }
             } catch (JSONException e) {
                 Log.e(TAG, "json parsing error: " + e.getMessage());
-                Toast.makeText(getApplicationContext(), "Json parse error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+//                Toast.makeText(getApplicationContext(), "Json parse error: " + e.getMessage(), Toast.LENGTH_LONG).show();
             }
 
         } else {

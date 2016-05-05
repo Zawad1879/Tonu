@@ -18,6 +18,8 @@ import org.json.JSONException;
 import cz.msebera.android.httpclient.Header;
 import me.argha.tonu.R;
 import me.argha.tonu.app.Config;
+import me.argha.tonu.app.EndPoints;
+import me.argha.tonu.helpers.MyPreferenceManager;
 
 public class GcmIntentService extends IntentService {
 
@@ -26,9 +28,8 @@ public class GcmIntentService extends IntentService {
     public GcmIntentService() {
         super(TAG);
     }
-
+    MyPreferenceManager preferenceManager;
     public static final String KEY = "key";
-    public static final String serverUrl= "http://192.168.0.105/gcm_chat/v1";
 //    public static final String TOPIC = "topic";
 //    public static final String SUBSCRIBE = "subscribe";
 //    public static final String UNSUBSCRIBE = "unsubscribe";
@@ -81,6 +82,7 @@ public class GcmIntentService extends IntentService {
         Intent registrationComplete = new Intent(Config.REGISTRATION_COMPLETE);
         registrationComplete.putExtra("token", token);
         LocalBroadcastManager.getInstance(this).sendBroadcast(registrationComplete);
+        Log.e(TAG,"broadcast sent");
     }
 
     private void sendRegistrationToServer(final String token) {
@@ -89,8 +91,13 @@ public class GcmIntentService extends IntentService {
         AsyncHttpClient asyncHttpClient= new AsyncHttpClient();
         RequestParams params = new RequestParams();
         params.put("gcm_registration_id",token);
-        asyncHttpClient.post(serverUrl+"/user/"+getSharedPreferences("myPreferences",MODE_PRIVATE).getString
-                ("user_id","-1"),params, new JsonHttpResponseHandler(){
+        if(preferenceManager==null){
+            preferenceManager=new MyPreferenceManager(this);
+        }
+        asyncHttpClient.post(EndPoints.UPDATEGCM
+                +preferenceManager.pref.getString(getResources()
+                .getString(R.string.user_id),"sbs"),params,
+                new JsonHttpResponseHandler(){
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                 super.onSuccess(statusCode, headers, response);

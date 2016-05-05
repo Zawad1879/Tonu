@@ -7,8 +7,6 @@ import android.content.Intent;
 import me.argha.tonu.R;
 import me.argha.tonu.activity.LoginActivity;
 import me.argha.tonu.helpers.MyPreferenceManager;
-import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
-import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 /**
  * Author: ARGHA K ROY
@@ -25,16 +23,16 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
         mInstance = this;
-        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
-                        .setDefaultFontPath("fonts/ubuntu_normal.ttf")
-                        .setFontAttrId(R.attr.fontPath)
-                        .build()
-        );
+//        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
+//                        .setDefaultFontPath("fonts/ubuntu_normal.ttf")
+//                        .setFontAttrId(R.attr.fontPath)
+//                        .build()
+//        );
     }
 
     @Override
     protected void attachBaseContext(Context base) {
-        super.attachBaseContext(CalligraphyContextWrapper.wrap(base));
+        super.attachBaseContext(/*CalligraphyContextWrapper.wrap*/(base));
     }
 
     public static synchronized MyApplication getInstance() {
