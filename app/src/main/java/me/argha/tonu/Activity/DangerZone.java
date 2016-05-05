@@ -18,10 +18,12 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -221,7 +223,7 @@ public class DangerZone extends AppCompatActivity implements OnMapReadyCallback,
     @Override
     public void onMapReady(GoogleMap map) {
         googleMap = map;
-        map.setMyLocationEnabled(true);
+//        map.setMyLocationEnabled(true);
 //        LatLng dangerCoordinates= new LatLng(23.8103,90.4125);
         setUpMarkersAndMap();
         init();
@@ -230,11 +232,17 @@ public class DangerZone extends AppCompatActivity implements OnMapReadyCallback,
     private void setUpMarkersAndMap() {
         LatLng myLocation=getMyLocation();
         Log.e("DANGERZOME", myLocation.latitude+","+myLocation.longitude);
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 14));
-//        googleMap.addMarker(new MarkerOptions()
-//                .position(dangerCoordinates)
-//                .title("Hijacking")
-//                .draggable(false));
+        CameraPosition camPos = new CameraPosition.Builder()
+
+                .target(myLocation)
+
+                .zoom(9)
+
+                .build();
+
+        CameraUpdate camUpdate = CameraUpdateFactory.newCameraPosition(camPos);
+        googleMap.animateCamera(camUpdate);
+        googleMap.setMyLocationEnabled(true);
         googleMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             EditText editText;
             LatLng latLng;
