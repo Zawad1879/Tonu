@@ -34,6 +34,7 @@
         android:hint="National ID No. "/>
 
     <Button
+        android:id="@+id/updateBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="#fff"
