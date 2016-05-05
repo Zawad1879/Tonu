@@ -1,8 +1,12 @@
 package me.argha.tonu.gcm;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -12,7 +16,9 @@ import com.google.android.gms.gcm.GcmListenerService;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import me.argha.tonu.R;
 import me.argha.tonu.activity.MainActivity;
+import me.argha.tonu.activity.SharedLocationActivity;
 import me.argha.tonu.app.Config;
 import me.argha.tonu.model.Message;
 import me.argha.tonu.model.User;
@@ -111,10 +117,14 @@ public class MyGcmPushReceiver extends GcmListenerService {
             String location = "UNINITIALIZED LOCATION";
             try {
 
-                if (datObj.getString("type").equals("location")){
+                if ((datObj.getString("type")).equals("location")){
+                    Log.e(TAG,"Notification is received: lcoation");
                     isMsgALocation=true;
-                    location= datObj.getString("location");
-
+                    location= datObj.getString("message");
+                    String name= datObj.getString("name");
+                    Log.e(TAG,"Values: "+name+", "+location);
+                    myCustomNotific(name,location);
+                    return;
                 }else{
                     JSONObject mObj = datObj.getJSONObject("message");
                     message.setMessage(mObj.getString("message"));
@@ -180,6 +190,40 @@ public class MyGcmPushReceiver extends GcmListenerService {
             // the push notification is silent, may be other operations needed
             // like inserting it in to SQLite
         }
+    }
+
+    private void myCustomNotific(String sender, String location) {
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(this)
+                        .setSmallIcon(R.drawable.notification_icon)
+                        .setContentTitle("Location received from "+sender)
+                        .setContentText(sender+" is in danger. Click to view location!");
+// Creates an explicit intent for an Activity in your app
+        Intent intent = new Intent(this, SharedLocationActivity.class);
+        String latLng []= location.split(",");
+        double lat= Double.valueOf(latLng[0]);
+        double lon= Double.valueOf(latLng[1]);
+        intent.putExtra("latitude",lat);
+        intent.putExtra("longitude", lon);
+// The stack builder object will contain an artificial back stack for the
+// started Activity.
+// This ensures that navigating backward from the Activity leads out of
+// your application to the Home screen.
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+// Adds the back stack for the Intent (but not the Intent itself)
+        stackBuilder.addParentStack(SharedLocationActivity.class);
+// Adds the Intent that starts the Activity to the top of the stack
+        stackBuilder.addNextIntent(intent);
+        PendingIntent resultPendingIntent =
+                stackBuilder.getPendingIntent(
+                        0,
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                );
+        mBuilder.setContentIntent(resultPendingIntent);
+        NotificationManager mNotificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+// mId allows you to update the notification later on.
+        mNotificationManager.notify(0, mBuilder.build());
     }
 
     /**

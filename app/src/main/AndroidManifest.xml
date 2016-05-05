@@ -104,7 +104,7 @@
             android:value="@integer/google_play_services_version" />
 
         <activity
-            android:name=".activity.ReportActivity"
+            android:name=".activity.SharedLocationActivity"
             android:label="@string/title_activity_report"
             android:screenOrientation="portrait" >
         </activity>

@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity
     public void mainBtnClicks(View view){
         switch (view.getId()){
             case R.id.mainReportBtn:
-                startActivity(new Intent(this,ReportActivity.class));
+                startActivity(new Intent(this,SharedLocationActivity.class));
                 break;
             case R.id.mainDangerZoneBtn:
                 Toast.makeText(MainActivity.this, "Showing all incidents previously occured", Toast

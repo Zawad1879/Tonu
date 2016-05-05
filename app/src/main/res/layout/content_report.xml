@@ -1,54 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:orientation="vertical"
-    android:layout_height="match_parent"
-    android:padding="5dp"
-    android:id="@+id/report_activity_ll"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".activity.ReportActivity"
-    tools:showIn="@layout/activity_report">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent" >
 
-    <TextView
+    <fragment
+        android:id="@+id/mapFragment"
+        android:name="com.google.android.gms.maps.MapFragment"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Name:"
-        android:id="@+id/report_name_textview"/>
+        android:layout_height="match_parent"/>
 
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/report_name_edittext"/>
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Description:"
-        android:id="@+id/report_description_textview"/>
-
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/report_description_edittext"/>
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:id="@+id/report_voice_btn"
-        android:background="@drawable/accent_round_bg"
-        android:textColor="#fff"
-        android:padding="10dp"
-        android:text="Provide voice statement (optional)"/>
-    <Button
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/report_submit_btn"
-        android:layout_gravity="center"
-        android:background="@color/colorPrimaryDark"
-        android:textColor="#fff"
-        android:layout_margin="50dp"
-        android:text="SUBMIT"/>
-</LinearLayout>
+</RelativeLayout>

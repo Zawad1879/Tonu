@@ -4,47 +4,57 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Gravity;
-import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.loopj.android.http.AsyncHttpClient;
 
-import butterknife.Bind;
 import butterknife.ButterKnife;
 import me.argha.tonu.R;
 import me.argha.tonu.app.Config;
 import me.argha.tonu.gcm.GcmIntentService;
+import me.argha.tonu.helpers.MyPreferenceManager;
 import me.argha.tonu.model.Message;
 
-public class ReportActivity extends AppCompatActivity implements OnClickListener{
-    @Bind(R.id.report_name_textview)TextView reportNameTv;
-    @Bind(R.id.report_name_edittext)EditText reportNameEt;
-    @Bind(R.id.report_description_textview)TextView reportDescTv;
-    @Bind(R.id.report_description_edittext)EditText reportDescEt;
-    @Bind(R.id.report_voice_btn)TextView reportVoiceBtn;
-    @Bind(R.id.report_submit_btn)TextView reportSubmitBtn;
-    @Bind(R.id.report_activity_ll)LinearLayout reportActivityLinearLayout;
+public class SharedLocationActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, OnMapReadyCallback {
+
 
     private String TAG = MainActivity.class.getSimpleName();
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private BroadcastReceiver mRegistrationBroadcastReceiver;
+    GoogleApiClient googleApiClient;
+    GoogleMap googleMap;
+    private MyPreferenceManager preferenceManager;
+    private Context context;
+    private AsyncHttpClient asyncHttpClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_report);
         ButterKnife.bind(this);
-        reportSubmitBtn.setOnClickListener(this);
+        setUpMaps();
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -55,7 +65,7 @@ public class ReportActivity extends AppCompatActivity implements OnClickListener
                     // now subscribe to `global` topic to receive app wide notifications
                     String token = intent.getStringExtra("token");
 
-                    Toast.makeText(getApplicationContext(), "GCM registration token: " + token, Toast.LENGTH_LONG).show();
+//                    Toast.makeText(getApplicationContext(), "GCM registration token: " + token, Toast.LENGTH_LONG).show();
 
                 } else if (intent.getAction().equals(Config.SENT_TOKEN_TO_SERVER)) {
                     // gcm registration id is stored in our server's MySQL
@@ -77,6 +87,20 @@ public class ReportActivity extends AppCompatActivity implements OnClickListener
         }
     }
 
+    private void setUpMaps() {
+        setUpGoogleApiClient();
+    }
+    private void setUpGoogleApiClient() {
+        googleApiClient= new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+        if(!googleApiClient.isConnected()) {
+            googleApiClient.connect();
+        }
+    }
+
     private boolean checkPlayServices() {
         int resultCode = GooglePlayServicesUtil
                 .isGooglePlayServicesAvailable(this);
@@ -93,27 +117,6 @@ public class ReportActivity extends AppCompatActivity implements OnClickListener
             return false;
         }
         return true;
-    }
-
-    @Override
-    public void onClick(View v) {
-        int id= v.getId();
-        if(id==R.id.report_submit_btn){
-            submitReport();
-        }else if(id==R.id.report_voice_btn){
-
-        }
-    }
-
-    private void submitReport() {
-        String name, desc, nationalId;
-        name=reportNameEt.getText().toString();
-        desc=reportDescEt.getText().toString();
-        Toast.makeText(ReportActivity.this, "Your report has been successfully submitted and will" +
-                " be reviewed", Toast
-                .LENGTH_LONG).show();
-        reportNameEt.setText("");
-        reportDescEt.setText("");
     }
 
     // starting the service to register with GCM
@@ -145,11 +148,33 @@ public class ReportActivity extends AppCompatActivity implements OnClickListener
 //            receivedMsgTv.setPadding(10, 5, 50, 5);
             receivedMsgTv.setBackgroundColor(0xfff);
 //            receivedMsgTv.setTextColor(0x000);
-            reportActivityLinearLayout.addView(receivedMsgTv);
 
         }
 
 
+    }
+
+    private void initMap() {
+
+        if (googleMap == null) {
+            MapFragment mapFragment = (MapFragment) getFragmentManager()
+                    .findFragmentById(R.id.mapFragment);
+            mapFragment.getMapAsync(this);
+            googleMap= mapFragment.getMap();
+
+
+//            if (googleMap == null) {
+//                Toast.makeText(MapActivity.this, "Failed to create google map", Toast.LENGTH_SHORT).show();
+//                return;
+//            }
+        }
+    }
+
+    private void init() {
+
+        preferenceManager= new MyPreferenceManager(this);
+        context=this;
+        asyncHttpClient= new AsyncHttpClient();
     }
 
     @Override
@@ -171,4 +196,75 @@ public class ReportActivity extends AppCompatActivity implements OnClickListener
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
         super.onPause();
     }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        initMap();
+//        setUpMarkersAndMap();
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        this.googleMap = googleMap;
+        googleMap.setMyLocationEnabled(true);
+//        LatLng dangerCoordinates= new LatLng(23.8103,90.4125);
+        setUpMarkersAndMap();
+        init();
+    }
+
+    private void setUpMarkersAndMap() {
+
+        LatLng myLocation=getMyLocation();
+        Log.e(TAG, myLocation.latitude+","+myLocation.longitude);
+        Bundle extras= getIntent().getExtras();
+        double lat = extras.getDouble("latitude");
+        double lon = extras.getDouble("longitude");
+        Log.e(TAG,lat+","+lon);
+        LatLng friendLoc= new LatLng(lat,lon);
+        googleMap.addMarker(new MarkerOptions()
+                .position(friendLoc)
+                .draggable(false)
+                .visible(true)
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.custom_marker))
+                );
+        CameraPosition camPos = new CameraPosition.Builder()
+
+                .target(friendLoc)
+
+                .zoom(14)
+
+                .build();
+
+        CameraUpdate camUpdate = CameraUpdateFactory.newCameraPosition(camPos);
+        googleMap.animateCamera(camUpdate);
+        googleMap.setMyLocationEnabled(true);
+    }
+
+    private LatLng getMyLocation() {
+        Location myLoc= LocationServices.FusedLocationApi
+                .getLastLocation(googleApiClient);
+        LatLng loc=null;
+
+        if (myLoc != null) {
+            double latitude = myLoc.getLatitude();
+            double longitude = myLoc.getLongitude();
+            loc= new LatLng(latitude, longitude);
+        }else{
+            Log.e("DANGERZONE","myLoc is null");
+            loc= new LatLng(24.369498, 88.626178);
+        }
+
+        return loc;
+    }
+
 }
