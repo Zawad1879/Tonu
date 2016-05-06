@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -68,9 +69,12 @@ public class DangerZone extends AppCompatActivity implements OnMapReadyCallback,
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.content_danger_zone);
-
-
         setUpGoogleApiClient();
+        preferenceManager= new MyPreferenceManager(this);
+        context=this;
+        asyncHttpClient= new AsyncHttpClient();
+        updateDangerHistory();
+
 
 
 
@@ -79,10 +83,8 @@ public class DangerZone extends AppCompatActivity implements OnMapReadyCallback,
 
     private void init() {
 
-        preferenceManager= new MyPreferenceManager(this);
-        context=this;
-        asyncHttpClient= new AsyncHttpClient();
-        updateDangerHistory();
+
+
         if(dangers==null){
             dangers= preferenceManager.pref.getStringSet("dangerHistory",new
                     HashSet<String>());
@@ -111,7 +113,7 @@ public class DangerZone extends AppCompatActivity implements OnMapReadyCallback,
 
                         preferenceManager.editor.putStringSet("dangerHistory",dangers);
                         preferenceManager.editor.commit();
-
+                        googleApiClientConnect();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -242,7 +244,14 @@ public class DangerZone extends AppCompatActivity implements OnMapReadyCallback,
 
         CameraUpdate camUpdate = CameraUpdateFactory.newCameraPosition(camPos);
         googleMap.animateCamera(camUpdate);
-        googleMap.setMyLocationEnabled(true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            // Call some material design APIs here
+
+        } else {
+            // Implement this feature without material design
+            googleMap.setMyLocationEnabled(true);
+        }
+
         googleMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             EditText editText;
             LatLng latLng;
@@ -335,6 +344,10 @@ public class DangerZone extends AppCompatActivity implements OnMapReadyCallback,
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
+
+    }
+
+    private void googleApiClientConnect(){
         if(!googleApiClient.isConnected()) {
             googleApiClient.connect();
         }

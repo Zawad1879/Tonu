@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
@@ -34,6 +35,7 @@ import butterknife.ButterKnife;
 import me.argha.tonu.R;
 import me.argha.tonu.app.Config;
 import me.argha.tonu.gcm.GcmIntentService;
+import me.argha.tonu.gcm.MyGcmPushReceiver;
 import me.argha.tonu.helpers.MyPreferenceManager;
 import me.argha.tonu.model.Message;
 
@@ -216,7 +218,7 @@ public class SharedLocationActivity extends AppCompatActivity implements GoogleA
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
-        googleMap.setMyLocationEnabled(true);
+//        googleMap.setMyLocationEnabled(true);
 //        LatLng dangerCoordinates= new LatLng(23.8103,90.4125);
         setUpMarkersAndMap();
         init();
@@ -227,15 +229,20 @@ public class SharedLocationActivity extends AppCompatActivity implements GoogleA
         LatLng myLocation=getMyLocation();
         Log.e(TAG, myLocation.latitude+","+myLocation.longitude);
         Bundle extras= getIntent().getExtras();
-        if(extras==null){
+        LatLng friendLoc=null;
+        if(MyGcmPushReceiver.staticLatLng!=null){
+            friendLoc= MyGcmPushReceiver.staticLatLng;
+        }
+        else if(extras==null){
             Toast.makeText(SharedLocationActivity.this, "No location has been shared with you"
                     , Toast.LENGTH_SHORT).show();
             return;
+        }else {
+            double lat = extras.getDouble("latitude");
+            double lon = extras.getDouble("longitude");
+            Log.e(TAG, lat + "," + lon);
+            friendLoc = new LatLng(lat, lon);
         }
-        double lat = extras.getDouble("latitude");
-        double lon = extras.getDouble("longitude");
-        Log.e(TAG,lat+","+lon);
-        LatLng friendLoc= new LatLng(lat,lon);
         googleMap.addMarker(new MarkerOptions()
                 .position(friendLoc)
                 .draggable(false)
@@ -252,7 +259,13 @@ public class SharedLocationActivity extends AppCompatActivity implements GoogleA
 
         CameraUpdate camUpdate = CameraUpdateFactory.newCameraPosition(camPos);
         googleMap.animateCamera(camUpdate);
-        googleMap.setMyLocationEnabled(true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            // Call some material design APIs here
+
+        } else {
+            // Implement this feature without material design
+            googleMap.setMyLocationEnabled(true);
+        }
     }
 
     private LatLng getMyLocation() {

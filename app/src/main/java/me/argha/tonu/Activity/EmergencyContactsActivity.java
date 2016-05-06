@@ -53,10 +53,10 @@ public class EmergencyContactsActivity extends AppCompatActivity {
 //        contactItemArrayList=new ArrayList<>();
         Set<String> contactNames=preferenceManager.getEmergencyContactNames();
         Set<String> contactNumbers=preferenceManager.getEmergencyContactNumbers();
-        if(contactNames.size()==0 || contactNumbers.size()==0){
-            preferenceManager.setEmergencyContactNames("Zawad","Shahed","Junayed");
-            preferenceManager.setEmergencyContactNumbers("01990123387","01680774007","01676768587");
-        }
+//        if(contactNames.size()==0 || contactNumbers.size()==0){
+//            preferenceManager.setEmergencyContactNames("Zawad","Shahed","Junayed");
+//            preferenceManager.setEmergencyContactNumbers("01621209959","01680774007","69");
+//        }
         contactItemArrayList= getEmergencyContacts(contactNames, contactNumbers);
 //        contactItemArrayList.add(new ContactItem("Turzo","01719858641"));
 //        contactItemArrayList.add(new ContactItem("Mehedi","01914596128"));

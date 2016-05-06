@@ -5,6 +5,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.location.Location;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -13,6 +16,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,6 +25,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -54,14 +62,17 @@ public class MainActivity extends AppCompatActivity
 
     MyPreferenceManager preferenceManager;
     boolean clicked=false;
+    private GoogleApiClient googleApiClient;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_layout);
+        setUpGoogleApiClient();
         preferenceManager= new MyPreferenceManager(this);
-        Toast.makeText(this,preferenceManager.pref.getBoolean(getResources().getString(R.string.is_user_logged_in),false)+"",Toast.LENGTH_LONG).show();
-        Toast.makeText(this,preferenceManager.pref.getString(getResources().getString(R.string.username),"Shoumik"),Toast.LENGTH_LONG).show();
+        Log.e(TAG, String.valueOf(preferenceManager.pref.getBoolean(getResources().getString(R.string
+                .is_user_logged_in),false)));
         ButterKnife.bind(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -110,14 +121,21 @@ public class MainActivity extends AppCompatActivity
 
                     //TODO get location
                     String name= preferenceManager.pref.getString("name","User");
-                    double lat=24.372062,lon= 88.624140;
+                    LatLng myLocation=getMyLocation();
+                    double lat=myLocation.latitude,lon= myLocation.longitude;
                     String messageToSend = name+" is in an emergency and would like your help" +
                             ".\nAddress: Map coordinates\nLocation: "+lat+", "+lon+"\n" +
                             "http://maps.google.com/?q="+lat+", "+lon;
 //                    String number = "01621209959";
                     Set<String> numbers= preferenceManager.getEmergencyContactNumbers();
                     for(String n: numbers){
-//                        SmsManager.getDefault().sendTextMessage(n, null, messageToSend, null,null);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            // Call some material design APIs here
+
+                        } else {
+                            // Implement this feature without material design
+                            SmsManager.getDefault().sendTextMessage(n, null, messageToSend, null,null);
+                        }
                         String [] numArray= {n};
                         AsyncHttpClient asyncHttpClient= new AsyncHttpClient();
                         RequestParams params= new RequestParams();
@@ -194,6 +212,23 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    private LatLng getMyLocation() {
+        Location myLoc= LocationServices.FusedLocationApi
+                .getLastLocation(googleApiClient);
+        LatLng loc=null;
+
+        if (myLoc != null) {
+            double latitude = myLoc.getLatitude();
+            double longitude = myLoc.getLongitude();
+            loc= new LatLng(latitude, longitude);
+        }else{
+            Log.e(TAG,"myLoc is null");
+            loc= new LatLng(24.372062,88.624140);
+        }
+
+        return loc;
+    }
+
     private void showBeeAnimation() {
         mainHelpBtn.setImageResource(R.drawable.bebutton);
         clicked=true;
@@ -237,9 +272,16 @@ public class MainActivity extends AppCompatActivity
                                 startActivity(new Intent(MainActivity.this,ChatActivity.class));
                                 break;
                             case 1:
-                                /*Intent callIntent = new Intent(Intent.ACTION_CALL);
+                                Intent callIntent = new Intent(Intent.ACTION_CALL);
                                 callIntent.setData(Uri.parse("tel:1234"));
-                                startActivity(callIntent);*/
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                    // Call some material design APIs here
+
+                                } else {
+                                    // Implement this feature without material design
+                                    startActivity(callIntent);
+                                }
+
                                 break;
                         }
                         dialog.dismiss();
@@ -304,7 +346,14 @@ public class MainActivity extends AppCompatActivity
             intent= new Intent(MainActivity.this,FAQActivity.class);
         } else if (id == R.id.logout) {
             preferenceManager.clear();
+            preferenceManager.editor.putBoolean(getResources().getString(R.string
+                    .is_user_logged_in),false);
+            preferenceManager.editor.clear();
+            preferenceManager.editor.commit();
+
             intent = new Intent(MainActivity.this, LoginActivity.class);
+            startActivity(intent);
+            finish();
         }
         else if (id == R.id.laws) {
 
@@ -316,6 +365,36 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void setUpGoogleApiClient() {
+        googleApiClient= new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+                    @Override
+                    public void onConnected(Bundle bundle) {
+
+                    }
+
+                    @Override
+                    public void onConnectionSuspended(int i) {
+
+                    }
+                })
+                .addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener() {
+                    @Override
+                    public void onConnectionFailed(ConnectionResult connectionResult) {
+
+                    }
+                })
+                .addApi(LocationServices.API)
+                .build();
+
+    }
+
+    private void googleApiClientConnect(){
+        if(!googleApiClient.isConnected()) {
+            googleApiClient.connect();
+        }
     }
 
 

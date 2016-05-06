@@ -13,9 +13,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-//import com.android.volley.RequestQueue;
-//import com.android.volley.toolbox.JsonObjectRequest;
-//import com.android.volley.toolbox.Volley;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -29,9 +26,11 @@ import butterknife.OnClick;
 import cz.msebera.android.httpclient.Header;
 import me.argha.tonu.R;
 import me.argha.tonu.app.EndPoints;
-import me.argha.tonu.app.MyApplication;
 import me.argha.tonu.helpers.MyPreferenceManager;
-import me.argha.tonu.model.User;
+
+//import com.android.volley.RequestQueue;
+//import com.android.volley.toolbox.JsonObjectRequest;
+//import com.android.volley.toolbox.Volley;
 
 public class RegularRegistrationActivity extends AppCompatActivity {
 
@@ -107,21 +106,6 @@ public class RegularRegistrationActivity extends AppCompatActivity {
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, insertUrl, new Response.Listener<JSONObject>() {
-//
-
-                preferenceManager.editor.putBoolean(getResources().getString(R.string.is_user_logged_in), true);
-                preferenceManager.editor.putString(getResources().getString(R.string.username), username.getText().toString());
-                preferenceManager.editor.putString(getResources().getString(R.string.user_id), id.getText().toString());
-                preferenceManager.editor.putString(getResources().getString(R.string.email), email.getText().toString());
-                preferenceManager.editor.putString(getResources().getString(R.string.phone), phonenumber.getText().toString());
-                preferenceManager.editor.commit();
-
-                Boolean is_user_logged_in=true;
-                String name=username.getText().toString();
-                String user_id=id.getText().toString();
-                String mail= email.getText().toString();
-                String phone=phonenumber.getText().toString();
 
                 AsyncHttpClient asyncHttpClient=new AsyncHttpClient();
                 asyncHttpClient.setMaxRetriesAndTimeout(5,20000);
@@ -131,7 +115,6 @@ public class RegularRegistrationActivity extends AppCompatActivity {
                 params.put(getResources().getString(R.string.user_id), id.getText().toString());
                 params.put(getResources().getString(R.string.email), email.getText().toString());
                 params.put(getResources().getString(R.string.phone), phonenumber.getText().toString());
-
                 params.put("gcm_registration_id","gcm_id");
                 String url= EndPoints.LOGIN+"/user/login";
                 asyncHttpClient.post(EndPoints.LOGIN,params,new JsonHttpResponseHandler(){
@@ -139,21 +122,44 @@ public class RegularRegistrationActivity extends AppCompatActivity {
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                         super.onSuccess(statusCode, headers, response);
                         try {
-                            Log.e("RegularRegistrationAct",response.toString(4));
-                            if(response.getBoolean("error")==false) {
-                                Toast.makeText(RegularRegistrationActivity.this,"Registration complete",Toast.LENGTH_SHORT).show();
+                            Log.e("RegularLoginAct", response.toString(4));
+                            if (response.getBoolean("error") == false) {
+                                //
+                                preferenceManager.editor.putBoolean(getResources().getString(R
+                                        .string.is_user_logged_in),true);
+                                Toast.makeText(RegularRegistrationActivity.this, "Login " +
+                                        "successful", Toast.LENGTH_SHORT)
+                                        .show();
+                                JSONObject jsonobj=response.getJSONObject("user");
+                                String id=jsonobj.getString("user_id");
+                                String name=jsonobj.getString("name");
+                                String email=jsonobj.getString("email");
+                                String phone=jsonobj.getString("phone");
+                                preferenceManager.editor.putString("user_id",id);
+                                preferenceManager.editor.putString("name",name);
+                                preferenceManager.editor.putString("phone",phone);
+                                preferenceManager.editor.putString("email",email);
+                                preferenceManager.editor.commit();
+                                Log.d("JSONid ",id);
+                                Log.d("JSONname ",name);
+                                Log.d("JSONmail ",email);
+                                Log.d("JSONphone ",phone);
+                                Log.e("tag","nothing");
+
+                                Intent i = new Intent(RegularRegistrationActivity.this, MainActivity.class);
+                                startActivity(i);
+                                finish();
+                            } else {
+                                Toast.makeText(RegularRegistrationActivity.this, "ID does not match", Toast.LENGTH_SHORT)
+                                        .show();
+
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
                     }
                 });
-              //  as.post(EndP)
-
-//                User user=new User(user_id,name,mail,phone);
-//                MyApplication.getInstance().getPrefManager().storeUser(user);
-
-                startActivity(new Intent(RegularRegistrationActivity.this, MainActivity.class));
+//                startActivity(new Intent(RegularRegistrationActivity.this, MainActivity.class));
 
 //                    @Override
 //                    public void onResponse(JSONObject response) {

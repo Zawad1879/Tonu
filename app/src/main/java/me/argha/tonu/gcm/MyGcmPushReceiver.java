@@ -2,8 +2,12 @@ package me.argha.tonu.gcm;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
@@ -12,6 +16,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GcmListenerService;
+import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,13 +25,14 @@ import me.argha.tonu.R;
 import me.argha.tonu.activity.MainActivity;
 import me.argha.tonu.activity.SharedLocationActivity;
 import me.argha.tonu.app.Config;
+import me.argha.tonu.app.MyApplication;
 import me.argha.tonu.model.Message;
 import me.argha.tonu.model.User;
 
 public class MyGcmPushReceiver extends GcmListenerService {
 
     private static final String TAG = MyGcmPushReceiver.class.getSimpleName();
-
+    public static LatLng staticLatLng= null;
     private NotificationUtils notificationUtils;
 
     /**
@@ -203,6 +209,7 @@ public class MyGcmPushReceiver extends GcmListenerService {
         String latLng []= location.split(",");
         double lat= Double.valueOf(latLng[0]);
         double lon= Double.valueOf(latLng[1]);
+        staticLatLng= new LatLng(lat,lon);
         intent.putExtra("latitude",lat);
         intent.putExtra("longitude", lon);
 // The stack builder object will contain an artificial back stack for the
@@ -224,6 +231,18 @@ public class MyGcmPushReceiver extends GcmListenerService {
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 // mId allows you to update the notification later on.
         mNotificationManager.notify(0, mBuilder.build());
+        playNotificationSound();
+    }
+
+    public void playNotificationSound() {
+        try {
+            Uri alarmSound = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE
+                    + "://" + MyApplication.getInstance().getApplicationContext().getPackageName() + "/raw/notification");
+            Ringtone r = RingtoneManager.getRingtone(MyApplication.getInstance().getApplicationContext(), alarmSound);
+            r.play();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**

@@ -113,11 +113,13 @@ public class LoginActivity extends AppCompatActivity {
     @OnClick(R.id.registrationRegularBtn)
     public void registerAsGuest(){
         startActivity(new Intent(this, RegularRegistrationActivity.class));
+        finish();
     }
 
     @OnClick(R.id.loginRegularBtn)
     public void loginAsGuest(){
         startActivity(new Intent(this, RegularLoginActivity.class));
+        finish();
     }
 
 

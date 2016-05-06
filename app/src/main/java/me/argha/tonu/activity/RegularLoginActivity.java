@@ -20,9 +20,7 @@ import org.json.JSONObject;
 import cz.msebera.android.httpclient.Header;
 import me.argha.tonu.R;
 import me.argha.tonu.app.EndPoints;
-import me.argha.tonu.app.MyApplication;
 import me.argha.tonu.helpers.MyPreferenceManager;
-import me.argha.tonu.model.User;
 
 /**
  * Created by user pc on 5/5/2016.
@@ -55,13 +53,12 @@ public class RegularLoginActivity extends AppCompatActivity {
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                preferenceManager.editor.putString("user_id",id.getText().toString());
-                preferenceManager.editor.commit();
+
                 String user_id= id.getText().toString();
                 AsyncHttpClient asyncHttpClient=new AsyncHttpClient();
                 RequestParams params=new RequestParams();
                 params.put("user_id", user_id);
-                String url= "http://192.168.0.106/tonu/v1/user/login";
+                String url= EndPoints.LOGIN;
                 asyncHttpClient.post(EndPoints.LOGIN, params, new JsonHttpResponseHandler() {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -69,26 +66,28 @@ public class RegularLoginActivity extends AppCompatActivity {
                         try {
                             Log.e("RegularLoginAct", response.toString(4));
                             if (response.getBoolean("error") == false) {
+                                preferenceManager.editor.putBoolean(getResources().getString(R
+                                        .string.is_user_logged_in),true);
                                 Toast.makeText(RegularLoginActivity.this, "Login complete", Toast.LENGTH_SHORT).show();
                                 JSONObject jsonobj=response.getJSONObject("user");
                                 String id=jsonobj.getString("user_id");
                                 String name=jsonobj.getString("name");
                                 String email=jsonobj.getString("email");
                                 String phone=jsonobj.getString("phone");
+                                preferenceManager.editor.putString("user_id",id);
+                                preferenceManager.editor.putString("name",name);
+                                preferenceManager.editor.putString("phone",phone);
+                                preferenceManager.editor.putString("email",email);
+                                preferenceManager.editor.commit();
                                 Log.d("JSONid ",id);
                                 Log.d("JSONname ",name);
                                 Log.d("JSONmail ",email);
                                 Log.d("JSONphone ",phone);
                                 Log.e("tag","nothing");
-                                User user=new User(id,name,email,phone);
-
-                               /* if (MyApplication.getInstance().getPrefManager().getUser()==null){
-                                    Log.d("reglogin:","this is null");
-                                }
-*///
 
                                 Intent i = new Intent(RegularLoginActivity.this, MainActivity.class);
                                 startActivity(i);
+                                finish();
                             } else {
                                 Toast.makeText(RegularLoginActivity.this, "ID does not match", Toast.LENGTH_SHORT).show();
 
